@@ -8,3 +8,5 @@ fastmcp==2.11.3
 httptools==0.6.4
 pandas==2.3.2
 pip==25.0.1
+pydantic==2.12.5
+pydantic-settings==2.12.0

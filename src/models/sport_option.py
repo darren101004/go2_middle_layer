@@ -35,11 +35,16 @@ class SportOption(Enum):
     CROSS_STEP = "cross_step"
     STATIC_WALK = "static_walk"
     TROT_RUN = "trot_run"
+    ECONOMIC_GAIT = "economic_gait"
     HAND_STAND = "hand_stand"
     CLASSIC_WALK = "classic_walk"
     AUTO_RECOVERY_SET = "auto_recovery_set"
     AUTO_RECOVERY_GET = "auto_recovery_get"
     SWITCH_AVOID_MODE = "switch_avoid_mode"
+    
+    # For GO2W
+    GET_STATE = "get_state"
+    SWITCH_GAIT = "switch_gait"
  
  
 API_ID_MAP = {
@@ -68,6 +73,7 @@ API_ID_MAP = {
     SportOption.HEART: 1036,
     SportOption.STATIC_WALK: 1061,
     SportOption.TROT_RUN: 1062,
+    SportOption.ECONOMIC_GAIT: 1063,
     SportOption.LEFT_FLIP: 2041,
     SportOption.BACK_FLIP: 2043,
     SportOption.HAND_STAND: 2044,
@@ -81,5 +87,44 @@ API_ID_MAP = {
     SportOption.AUTO_RECOVERY_SET: 2054,
     SportOption.AUTO_RECOVERY_GET: 2055,
     SportOption.SWITCH_AVOID_MODE: 2058,
+    
+    # For GO2W
+    SportOption.GET_STATE: 9999,
+    SportOption.SWITCH_GAIT: 9998,
 }
 
+GO2W_SUPPORTED_OPTIONS = [
+    SportOption.DAMP,
+    SportOption.BALANCE_STAND,
+    SportOption.STOP_MOVE,
+    SportOption.STAND_UP,
+    SportOption.STAND_DOWN,
+    SportOption.RECOVERY_STAND,
+    SportOption.MOVE,
+    SportOption.SWITCH_GAIT,    # NOT SUPPORTED CURRENTLY
+    SportOption.GET_STATE,     # NOT SUPPORTED CURRENTLY
+    SportOption.SPEED_LEVEL
+]
+
+
+
+RESPONSE_CODE_MAP = {
+    0: "Success",
+    3001: "Unknown error",
+    3102: "Request sending error",
+    3103: "API not registered",
+    3104: "Request timeout",
+    3105: "Request and response data do not match",
+    3106: "Invalid response data",
+    3107: "Invalid lease",
+    3201: "Response sending error",
+    3202: "Internal server error",
+    3203: "API not implemented on the server",
+    3204: "API parameter error",
+    3205: "Request rejected",
+    3206: "Invalid lease",
+    3207: "Lease already exists",
+}
+
+def get_response_message(code: int) -> str:
+    return RESPONSE_CODE_MAP.get(code, "Unknown error")
