@@ -119,7 +119,7 @@ async def turn_right() -> Response:
     balance_stand_req = SportRequest(option=SportOption.BALANCE_STAND, params={})
     _ = sport_handler.handle(balance_stand_req)
     
-    vyaw = -0.3
+    vyaw = -0.5
     alpha = 90
     time_to_turn = abs((PI * alpha / 180) / vyaw)
 
@@ -128,7 +128,7 @@ async def turn_right() -> Response:
     params = {
         "vx": 0,
         "vy": 0,
-        "vyaw": -vyaw,
+        "vyaw": vyaw,
     }
     while time.time() - start_time < time_to_turn:
         turn_req = SportRequest(option=SportOption.MOVE, params=params)
