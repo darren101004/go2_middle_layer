@@ -42,7 +42,7 @@ class SportHandler:
             SportOption.HEART: self.sport_client.Heart,
             SportOption.STATIC_WALK: self.sport_client.StaticWalk,
             SportOption.TROT_RUN: self.sport_client.TrotRun,
-            SportOption.ECONOMIC_GAIT: self.sport_client.EconomicGait,
+            # SportOption.ECONOMIC_GAIT: self.sport_client.EconomicGait,
             SportOption.LEFT_FLIP: self.sport_client.LeftFlip,
             SportOption.BACK_FLIP: self.sport_client.BackFlip,
             SportOption.HAND_STAND: self.sport_client.HandStand,
