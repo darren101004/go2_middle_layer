@@ -1,15 +1,14 @@
-import logging
-from fastmcp import FastMCP
 import asyncio
-
-
-from models.response import Response
-from models.sport_request import SportRequest
-from models.sport_option import SportOption
-from unitree_sdk2py.go2.sport.sport_client import SportClient
-from mcps.sport.sport_handler import SportHandler
-from unitree_sdk2py.core.channel import ChannelFactoryInitialize
+import logging
 import time
+
+from fastmcp import FastMCP
+from mcps.sport.sport_handler import SportHandler
+from models.response import Response
+from models.sport_option import SportOption
+from models.sport_request import SportRequest
+
+
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO)
 
@@ -17,19 +16,7 @@ mcp = FastMCP("sport")
 
 sport_handler = SportHandler()
 
-@mcp.tool(description="Sport command: Damp")
-async def damp() -> Response:
-    stand_down_req = SportRequest(option=SportOption.STAND_DOWN, params={})
-    stand_down_response = sport_handler.handle(stand_down_req)
-    if not stand_down_response.success:
-        await asyncio.sleep(3)
-    damp_req = SportRequest(option=SportOption.DAMP, params={})
-    return sport_handler.handle(damp_req)
-
-@mcp.tool(description="Sport command: Balance Stand")
-async def balance_stand() -> Response:
-    req = SportRequest(option=SportOption.BALANCE_STAND)
-    return sport_handler.handle(req)
+PI = 3.1415926
 
 @mcp.tool(description="Sport command: Stop Move")
 async def stop_move() -> Response:
@@ -38,25 +25,29 @@ async def stop_move() -> Response:
 
 @mcp.tool(description="Sport command: Stand Up")
 async def stand_up() -> Response:
-    req = SportRequest(option=SportOption.STAND_UP)
-    return sport_handler.handle(req)
+    
+    recovery_stand_req = SportRequest(option=SportOption.RECOVERY_STAND, params={})
+    _ = sport_handler.handle(recovery_stand_req)
+    
+    balance_stand_req = SportRequest(option=SportOption.BALANCE_STAND, params={})
+    _ = sport_handler.handle(balance_stand_req)
+    
+    stand_up_req = SportRequest(option=SportOption.STAND_UP, params={})
+    res = sport_handler.handle(stand_up_req)
+    return res
 
 @mcp.tool(description="Sport command: Stand Down")
 async def stand_down() -> Response:
-    req = SportRequest(option=SportOption.STAND_DOWN)
-    return sport_handler.handle(req)
+    stand_down_req = SportRequest(option=SportOption.STAND_DOWN, params={})
+    res = sport_handler.handle(stand_down_req)
+    return res
 
-@mcp.tool(description="Sport command: Recovery Stand")
-async def recovery_stand() -> Response:
-    req = SportRequest(option=SportOption.RECOVERY_STAND)
-    return sport_handler.handle(req)
-
-async def move(
-    vx: float,
-    vy: float,
-    vyaw: float,
-) -> Response:
-    
+@mcp.tool(description="Sport command: Go Ahead 0.3 meters")
+async def go_ahead() -> Response:
+    vx = 0.3
+    vy = 0
+    vyaw = 0
+    time_to_move = 0.3 / vx
     
     recovery_stand_req = SportRequest(option=SportOption.RECOVERY_STAND, params={})
     _ = sport_handler.handle(recovery_stand_req)
@@ -69,33 +60,86 @@ async def move(
     # Default mode: vx [-1.5, 1.5], vy [-0.6, 0.6], vyaw [-1.0, 1.0]
     # Stair climbing: vx [-0.7, 0.7], vy [-0.5, 0.5], vyaw [-1.0, 1.0]
     # Climbing height: vx [-0.5, 0.5], vy [-0.4, 0.4], vyaw [-0.6, 0.6]
-
-    def limit(val, min_val, max_val):
-        return max(min_val, min(max_val, val))
-
-    vx_limited = limit(vx, -1.5, 1.5)
-    vy_limited = limit(vy, -0.6, 0.6)
-    vyaw_limited = limit(vyaw, -1.0, 1.0)
+    params = {
+        "vx": vx,
+        "vy": vy,
+        "vyaw": vyaw,
+    }
     
+    start_time = time.time()
+    res = None
+    while time.time() - start_time < time_to_move:
+        move_req = SportRequest(option=SportOption.MOVE, params=params)
+        res = sport_handler.handle(move_req)
+        if not res.success:
+            return res
+        await asyncio.sleep(0.5)
+        
+    stop_move_req = SportRequest(option=SportOption.STOP_MOVE, params={})
+    _ = sport_handler.handle(stop_move_req)
+    return res
+
+
+@mcp.tool(description="Sport command: Turn left 90 degrees")
+async def turn_left() -> Response:
+    
+    recovery_stand_req = SportRequest(option=SportOption.RECOVERY_STAND, params={})
+    _ = sport_handler.handle(recovery_stand_req)
+    
+    balance_stand_req = SportRequest(option=SportOption.BALANCE_STAND, params={})
+    _ = sport_handler.handle(balance_stand_req)
+    
+    
+    vyaw = 0.5
+    alpha = 90
+    time_to_turn = abs((PI * alpha / 180) / vyaw)
+
+    start_time = time.time()
+    res = None
     params = {
-        "vx": vx_limited,
-        "vy": vy_limited,
-        "vyaw": vyaw_limited,
+        "vx": 0,
+        "vy": 0,
+        "vyaw": vyaw,
     }
-    move_req = SportRequest(option=SportOption.MOVE, params=params)
-    return sport_handler.handle(move_req)
+    while time.time() - start_time < time_to_turn:
+        turn_req = SportRequest(option=SportOption.MOVE, params=params)
+        res = sport_handler.handle(turn_req)
+        if not res.success:
+            return res
+        await asyncio.sleep(0.5)
+    
+    return res
 
 
-@mcp.tool(description="Sport command: Speed Level")
-async def speed_level(
-    level: int,
-) -> Response:
+@mcp.tool(description="Sport command: Turn right 90 degrees")
+async def turn_right() -> Response:
+    recovery_stand_req = SportRequest(option=SportOption.RECOVERY_STAND, params={})
+    _ = sport_handler.handle(recovery_stand_req)
+    
+    balance_stand_req = SportRequest(option=SportOption.BALANCE_STAND, params={})
+    _ = sport_handler.handle(balance_stand_req)
+    
+    vyaw = -0.3
+    alpha = 90
+    time_to_turn = abs((PI * alpha / 180) / vyaw)
+
+    start_time = time.time()
+    res = None
     params = {
-        "level": level,
+        "vx": 0,
+        "vy": 0,
+        "vyaw": -vyaw,
     }
-    req = SportRequest(option=SportOption.SPEED_LEVEL, params=params)
-    return sport_handler.handle(req)
-
+    while time.time() - start_time < time_to_turn:
+        turn_req = SportRequest(option=SportOption.MOVE, params=params)
+        res = sport_handler.handle(turn_req)
+        if not res.success:
+            return res
+        await asyncio.sleep(0.5)
+    
+    stop_move_req = SportRequest(option=SportOption.STOP_MOVE, params={})
+    _ = sport_handler.handle(stop_move_req)
+    return res
 
 if __name__ == "__main__":
     mcp.run()
