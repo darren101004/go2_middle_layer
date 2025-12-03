@@ -6,12 +6,12 @@ from fastapi.concurrency import asynccontextmanager
 from starlette.middleware import Middleware
 from starlette.middleware.exceptions import ExceptionMiddleware
 from mcps.sport.main import mcp as sport_mcp
-from unitree_sdk2py.core.channel import ChannelFactoryInitialize
 
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 logger = logging.getLogger(__name__)
 
-ChannelFactoryInitialize(0, "eth0")
 
 
 middleware = [ Middleware(ExceptionMiddleware)]
@@ -70,6 +70,4 @@ if __name__ == "__main__":
         help="Port to run the server on (default: 8000)",
     )
 
-    args = parser.parse_args()
-
-    uvicorn.run(app, host="0.0.0.0", port=args.port, log_level="debug")
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="debug")

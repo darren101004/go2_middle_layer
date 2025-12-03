@@ -1,14 +1,22 @@
-from src.models.sport_request import SportRequest
-from src.models.response import Response
-from src.models.sport_option import SportOption
+from models.sport_request import SportRequest
+from models.response import Response
+from models.sport_option import SportOption
 from unitree_sdk2py.go2.sport.sport_client import SportClient
+from unitree_sdk2py.core.channel import ChannelFactoryInitialize
+import time
 
 
 class SportHandler:
-    def __init__(self, sport_client: SportClient):
-        self.sport_client = sport_client
-        
+    def __init__(self):
+        ChannelFactoryInitialize(0, "eth0")
+        time.sleep(1)
+        self.sport_client = SportClient()
+        self.sport_client.SetTimeout(10.0)
+        self.sport_client.Init()
+    
+    
     def handle(self, request: SportRequest) -> Response:
+        print("In SportHandler: Handling sport command: ", request)
         
         try:
             if request.option == SportOption.DAMP:
@@ -18,7 +26,9 @@ class SportHandler:
             elif request.option == SportOption.STOP_MOVE:
                 self.sport_client.StopMove()
             elif request.option == SportOption.STAND_UP:
-                self.sport_client.StandUp()
+                print("In SportHandler: Standing up")
+                res = self.sport_client.StandUp()
+                print("In SportHandler: Standing up result: ", res)
             elif request.option == SportOption.STAND_DOWN:
                 self.sport_client.StandDown()
             elif request.option == SportOption.RECOVERY_STAND:

@@ -1,7 +1,7 @@
 import logging
 from fastmcp import FastMCP
 
-from src.models.response import Response
+from models.response import Response
 from unitree_sdk2py.go2.video.video_client import VideoClient
 
 

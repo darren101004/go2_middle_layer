@@ -1,7 +1,7 @@
 import logging
 from fastmcp import FastMCP
 
-from src.models.response import Response
+from models.response import Response
 from unitree_sdk2py.idl.unitree_go.msg.dds_ import SportModeState_
 from unitree_sdk2py.core.channel import ChannelSubscriber
 

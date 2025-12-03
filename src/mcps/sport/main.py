@@ -3,23 +3,22 @@ from fastmcp import FastMCP
 import asyncio
 
 
-from src.models.response import Response
-from src.models.sport_request import SportRequest
-from src.models.sport_option import SportOption
+from models.response import Response
+from models.sport_request import SportRequest
+from models.sport_option import SportOption
 from unitree_sdk2py.go2.sport.sport_client import SportClient
-from src.mcps.sport.sport_handler import SportHandler
-
+from mcps.sport.sport_handler import SportHandler
+from unitree_sdk2py.core.channel import ChannelFactoryInitialize
+import time
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO)
 
 mcp = FastMCP("sport")
 
-
-sport_client = SportClient()
-sport_handler = SportHandler(sport_client)
+sport_handler = SportHandler()
 
 @mcp.tool(description="Sport command: Damp")
-async def sport_command() -> Response:
+async def damp() -> Response:
     stand_down_req = SportRequest(option=SportOption.STAND_DOWN, params={})
     stand_down_response = sport_handler.handle(stand_down_req)
     if not stand_down_response.success:
@@ -28,31 +27,31 @@ async def sport_command() -> Response:
     return sport_handler.handle(damp_req)
 
 @mcp.tool(description="Sport command: Balance Stand")
-async def sport_command_balance_stand() -> Response:
+async def balance_stand() -> Response:
     req = SportRequest(option=SportOption.BALANCE_STAND)
     return sport_handler.handle(req)
 
 @mcp.tool(description="Sport command: Stop Move")
-async def sport_command_stop_move() -> Response:
+async def stop_move() -> Response:
     req = SportRequest(option=SportOption.STOP_MOVE)
     return sport_handler.handle(req)
 
 @mcp.tool(description="Sport command: Stand Up")
-async def sport_command_stand_up() -> Response:
+async def stand_up() -> Response:
     req = SportRequest(option=SportOption.STAND_UP)
     return sport_handler.handle(req)
 
 @mcp.tool(description="Sport command: Stand Down")
-async def sport_command_stand_down() -> Response:
+async def stand_down() -> Response:
     req = SportRequest(option=SportOption.STAND_DOWN)
     return sport_handler.handle(req)
 
 @mcp.tool(description="Sport command: Recovery Stand")
-async def sport_command_recovery_stand() -> Response:
+async def recovery_stand() -> Response:
     req = SportRequest(option=SportOption.RECOVERY_STAND)
     return sport_handler.handle(req)
 
-async def sport_command_move(
+async def move(
     vx: float,
     vy: float,
     vyaw: float,
@@ -88,7 +87,7 @@ async def sport_command_move(
 
 
 @mcp.tool(description="Sport command: Speed Level")
-async def sport_command_speed_level(
+async def speed_level(
     level: int,
 ) -> Response:
     params = {
