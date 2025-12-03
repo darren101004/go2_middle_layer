@@ -1,21 +1,13 @@
-import ast
 import asyncio
-import httpx
-from mcp.client.session import ClientSession
-from mcp.client.sse import sse_client
-import io
-import pandas as pd
-import uuid
-task_id = str(uuid.uuid4())
-BASE_URL = f"http://localhost:8001/financial_datasets/mcp"
-
 from fastmcp import Client
 from fastmcp.client import StreamableHttpTransport
 
+BASE_URL = "http://localhost:8000/sport/mcp"
 
-
-async def test_list_tools(client: Client[StreamableHttpTransport] = None):
-    """Test listing the MCP tools"""
+async def test_list_tools():
+    client = Client(
+        transport=StreamableHttpTransport(url=BASE_URL)
+    )
     async with client:
         assert client.is_connected()
         tools = await client.list_tools()
@@ -24,20 +16,27 @@ async def test_list_tools(client: Client[StreamableHttpTransport] = None):
             print(tool.name)
 
 async def test_stand_up():
-    streamable_http_client = Client(
-        transport=StreamableHttpTransport(
-            url=BASE_URL
-        )
+    client = Client(
+        transport=StreamableHttpTransport(url=BASE_URL)
     )
-    async with streamable_http_client:
-        assert streamable_http_client.is_connected()
-        arguments = {}
-        stand_up = await streamable_http_client.call_tool(name="stand_up", arguments=arguments)
-        print(stand_up)
-        
+    async with client:
+        assert client.is_connected()
+        result = await client.call_tool("stand_up", {})
+        print(result)
+
+async def test_stand_down():
+    client = Client(
+        transport=StreamableHttpTransport(url=BASE_URL)
+    )
+    async with client:
+        assert client.is_connected()
+        result = await client.call_tool("stand_down", {})
+        print(result)
+
 async def test_all_cmp_tools():
     await test_list_tools()
     await test_stand_up()
+    await test_stand_down()
 
 if __name__ == "__main__":
     asyncio.run(test_all_cmp_tools())
