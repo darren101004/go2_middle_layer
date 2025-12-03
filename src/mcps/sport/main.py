@@ -80,6 +80,39 @@ async def go_ahead() -> Response:
     return res
 
 
+@mcp.tool(description="Sport command: Go Back 0.3 meters")
+async def go_back() -> Response:
+    vx = -0.3
+    vy = 0
+    vyaw = 0
+    time_to_move = abs(0.3 / vx)
+    
+    recovery_stand_req = SportRequest(option=SportOption.RECOVERY_STAND, params={})
+    _ = sport_handler.handle(recovery_stand_req)
+    
+    balance_stand_req = SportRequest(option=SportOption.BALANCE_STAND, params={})
+    _ = sport_handler.handle(balance_stand_req)
+    
+    params = {
+        "vx": vx,
+        "vy": vy,
+        "vyaw": vyaw,
+    }
+    
+    start_time = time.time()
+    res = None
+    while time.time() - start_time < time_to_move:
+        move_req = SportRequest(option=SportOption.MOVE, params=params)
+        res = sport_handler.handle(move_req)
+        if not res.success:
+            return res
+        await asyncio.sleep(0.5)
+    
+    stop_move_req = SportRequest(option=SportOption.STOP_MOVE, params={})
+    _ = sport_handler.handle(stop_move_req)
+    return res
+
+
 @mcp.tool(description="Sport command: Turn left 90 degrees")
 async def turn_left() -> Response:
     
