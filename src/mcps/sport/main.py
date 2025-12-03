@@ -47,7 +47,8 @@ async def go_ahead() -> Response:
     vx = 0.3
     vy = 0
     vyaw = 0
-    time_to_move = 0.3 / vx
+    distance = 1 # 1 meter but it is 0.3 meters in the real world
+    time_to_move = distance / vx
     
     recovery_stand_req = SportRequest(option=SportOption.RECOVERY_STAND, params={})
     _ = sport_handler.handle(recovery_stand_req)
@@ -85,7 +86,8 @@ async def go_back() -> Response:
     vx = -0.3
     vy = 0
     vyaw = 0
-    time_to_move = abs(0.3 / vx)
+    distance = 1 # 1 meter but it is 0.3 meters in the real world
+    time_to_move = distance / vx
     
     recovery_stand_req = SportRequest(option=SportOption.RECOVERY_STAND, params={})
     _ = sport_handler.handle(recovery_stand_req)
@@ -124,7 +126,7 @@ async def turn_left() -> Response:
     
     
     vyaw = 0.5
-    alpha = 90
+    alpha = 60 # 60 degrees but it is 90 degrees in the real world
     time_to_turn = abs((PI * alpha / 180) / vyaw)
 
     start_time = time.time()
@@ -153,7 +155,7 @@ async def turn_right() -> Response:
     _ = sport_handler.handle(balance_stand_req)
     
     vyaw = -0.5
-    alpha = 90
+    alpha = 60 # 60 degrees but it is 90 degrees in the real world
     time_to_turn = abs((PI * alpha / 180) / vyaw)
 
     start_time = time.time()
