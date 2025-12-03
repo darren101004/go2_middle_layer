@@ -65,7 +65,8 @@ class SportHandler:
         try:
             if request.option in self.mapping_api:
                 api_function = self.mapping_api[request.option]
-                res = api_function()
+                params = request.params
+                res = api_function(**params) if params else api_function()
                 code = 0
                 data = None
                 if isinstance(res, int) or isinstance(res, str):
