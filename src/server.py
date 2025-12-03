@@ -5,18 +5,13 @@ from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
 from starlette.middleware import Middleware
 from starlette.middleware.exceptions import ExceptionMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
-from ddtrace.trace import tracer
-from ddtrace import patch
-from ddtrace.contrib.asgi import TraceMiddleware
-from fastapi import FastAPI, Request
 from mcps.sport.main import mcp as sport_mcp
 from unitree_sdk2py.core.channel import ChannelFactoryInitialize
 
 
 logger = logging.getLogger(__name__)
 
-ChannelFactoryInitialize(0, "wlan0")
+ChannelFactoryInitialize(0, "eth0")
 
 
 middleware = [ Middleware(ExceptionMiddleware)]

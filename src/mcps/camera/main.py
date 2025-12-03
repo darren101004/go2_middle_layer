@@ -1,12 +1,7 @@
-import json
 import logging
-from typing import Annotated, Literal
-
-import pandas as pd
 from fastmcp import FastMCP
 
 from src.models.response import Response
-from src.models.sport_option import SportOption
 from unitree_sdk2py.go2.video.video_client import VideoClient
 
 

@@ -1,12 +1,7 @@
-import json
 import logging
-from typing import Annotated, Literal
-
-import pandas as pd
 from fastmcp import FastMCP
 
 from src.models.response import Response
-from src.models.sport_option import SportOption
 from unitree_sdk2py.idl.unitree_go.msg.dds_ import SportModeState_
 from unitree_sdk2py.core.channel import ChannelSubscriber
 
