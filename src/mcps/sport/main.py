@@ -38,6 +38,10 @@ async def stand_up() -> Response:
 
 @mcp.tool(description="Sport command: Stand Down")
 async def stand_down() -> Response:
+    stand_up_req = SportRequest(option=SportOption.STAND_UP, params={})
+    _ = sport_handler.handle(stand_up_req)
+    
+
     stand_down_req = SportRequest(option=SportOption.STAND_DOWN, params={})
     res = sport_handler.handle(stand_down_req)
     return res
